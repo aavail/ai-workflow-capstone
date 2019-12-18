@@ -1,2 +1,3 @@
-# ai-workflow-capstone
-IBM AI Enterprise Workflow Capstone
+# IBM AI Enterprise Workflow Capstone
+
+Files for the IBM AI Enterprise Workflow Capstone project.  
