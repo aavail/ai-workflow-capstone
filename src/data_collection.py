@@ -34,7 +34,7 @@ def fetch_data(path,sample = True):
                 logging.debug(f'key_name total_price  is not standardized,'+ 
                                 ' and has been changed to price in file {i}')
             if  list(item.keys()).sort() != correct_cols_name:
-                logging.warning(f'key name of element {idx} in file {i} is wrong' +
+                logging.warning(f'key name of element {idx} in file {i} is {item.keys().__str__())}' +
                                 'and it has been removed from file')
                 unstandardized_element.append(idx)
         data = list( data[i] for i in range(len(data)) if i not in unstandardized_element)
