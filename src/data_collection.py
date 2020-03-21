@@ -17,6 +17,8 @@ from collections import defaultdict
 #logging = logging.getlogging(__name__)
 logging.basicConfig(level=logging.INFO)
 import time
+import warnings
+warnings.filterwarnings("ignore")
 
 def fetch_data(path,sample = True):
     """fetch json data from a path """
@@ -24,7 +26,7 @@ def fetch_data(path,sample = True):
        'stream_id', 'times_viewed', 'year'])
     all_json_data = []
     logging.info(f'start loading data...')
-    for i in glob.glob(os.path.join(path,'*')):
+    for i in glob.glob(os.path.join(path,'*.json')):
         with open(i) as f:
             data = json.load(f)
    
@@ -119,13 +121,13 @@ def engineer_features(df,training=True):
     dates = dates[mask]
     X.reset_index(drop=True, inplace=True)
 
-    if training == True:
-        ## remove the last 30 days (because the target is not reliable)
-        mask = np.arange(X.shape[0]) < np.arange(X.shape[0])[-30]
-        X = X[mask]
-        y = y[mask]
-        dates = dates[mask]
-        X.reset_index(drop=True, inplace=True)
+#    if training == True:
+#        ## remove the last 30 days (because the target is not reliable)
+#        mask = np.arange(X.shape[0]) < np.arange(X.shape[0])[-30]
+#        X = X[mask]
+#        y = y[mask]
+#        dates = dates[mask]
+#        X.reset_index(drop=True, inplace=True)
     
     return(X,y,dates)
 
@@ -141,14 +143,15 @@ def convert(seconds):
 if __name__ == "__main__":
 
     run_start = time.time() 
-    path = os.dirname(__file__)
-    data_dir = os.path.join(path ,"data","cs-train")
+    path = os.path.dirname(__file__)
+    data_dir = os.path.abspath(os.path.join(path,'..',"cs-train"))
+    print(data_dir)
     data_all = fetch_data(data_dir,False)
-    logging.info("load time: {:.2f}".format((time.time()-run_start))/3600)
-    aggr_df = aggr_data(data_all)
-    logging.info("aggr time: {:.2f}".format((time.time()-run_start))/3600)
-    featured_df = engineer_features(aggr_df,True)
-    logging.info("feature time: {:.2f}".format((time.time()-run_start))/3600)
+    logging.info("load time: {}".format(convert(time.time()-run_start)))
+    aggr_df = convert_to_ts(data_all)
+    logging.info("aggr time: {}".format(convert(time.time()-run_start)))
+    featured_df = engineer_features(aggr_df,False)
+    logging.info("feature time: {}".format(convert(time.time()-run_start)))
 
 
 

@@ -4,110 +4,63 @@ collection of functions for the final case study solution
 """
 
 import os
-import sys
 import re
-import shutil
-import time
-import pickle
-from collections import defaultdict
-from datetime import datetime
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+import json
+import glob
+import logging
+from collections import defaultdict
+import shutil
+#logging = logging.getlogging(__name__)
+logging.basicConfig(level=logging.INFO)
+import time
+import warnings
+warnings.filterwarnings("ignore")
 
-COLORS = ["darkorange","royalblue","slategrey"]
-
-def fetch_data(data_dir):
-    """
-    laod all json formatted files into a dataframe
-    """
-
-    ## input testing
-    if not os.path.isdir(data_dir):
-        raise Exception("specified data dir does not exist")
-    if not len(os.listdir(data_dir)) > 0:
-        raise Exception("specified data dir does not contain any files")
-
-    file_list = [os.path.join(data_dir,f) for f in os.listdir(data_dir) if re.search("\.json",f)]
-    correct_columns = ['country', 'customer_id', 'day', 'invoice', 'month',
-                       'price', 'stream_id', 'times_viewed', 'year']
-
-    ## read data into a temp structure
-    all_months = {}
-    for file_name in file_list:
-        df = pd.read_json(file_name)
-        all_months[os.path.split(file_name)[-1]] = df
-
-    ## ensure the data are formatted with correct columns
-    for f,df in all_months.items():
-        cols = set(df.columns.tolist())
-        if 'StreamID' in cols:
-             df.rename(columns={'StreamID':'stream_id'},inplace=True)
-        if 'TimesViewed' in cols:
-            df.rename(columns={'TimesViewed':'times_viewed'},inplace=True)
-        if 'total_price' in cols:
-            df.rename(columns={'total_price':'price'},inplace=True)
-
-        cols = df.columns.tolist()
-        if sorted(cols) != correct_columns:
-            raise Exception("columns name could not be matched to correct cols")
-
-    ## concat all of the data
-    df = pd.concat(list(all_months.values()),sort=True)
-    years,months,days = df['year'].values,df['month'].values,df['day'].values 
-    dates = ["{}-{}-{}".format(years[i],str(months[i]).zfill(2),str(days[i]).zfill(2)) for i in range(df.shape[0])]
-    df['invoice_date'] = np.array(dates,dtype='datetime64[D]')
-    df['invoice'] = [re.sub("\D+","",i) for i in df['invoice'].values]
-    
-    ## sort by date and reset the index
-    df.sort_values(by='invoice_date',inplace=True)
-    df.reset_index(drop=True,inplace=True)
-    
-    return(df)
+def fetch_data(path):
+    """fetch json data from a path """
+    correct_cols_name =sorted(['country', 'customer_id', 'day', 'invoice', 'month', 'price',
+       'stream_id', 'times_viewed', 'year'])
+    all_json_data = []
+    logging.info(f'start loading data...')
+    for i in glob.glob(os.path.join(path,'*.json')):
+        with open(i) as f:
+            data = json.load(f)
+        unstandardized_element = []
+        for idx,item in enumerate(data):
+            if 'total_price' in item.keys():
+                data[idx]['price'] = data[idx].pop('total_price')
+                logging.debug(f'key_name total_price  is not standardized and has been changed to price in file {i}')
+            if 'StreamID' in item.keys():
+                data[idx]['stream_id'] = data[idx].pop('StreamID')
+            if 'TimesViewed' in item.keys():
+                data[idx]['times_viewed'] = data[idx].pop('TimesViewed')
+            if  sorted(list(item.keys())) != correct_cols_name:
+                logging.warning(f"key name of element {idx} in file {i} is {item.keys().__str__()}" +
+                                "and it has been removed from file")
+                unstandardized_element.append(idx)
+        data = list( data[i] for i in range(len(data)) if i not in unstandardized_element)
+        all_json_data.extend(data)
+    return pd.DataFrame(all_json_data)
 
 
-def convert_to_ts(df_orig, country=None):
-    """
-    given the original DataFrame (fetch_data())
-    return a numerically indexed time-series DataFrame 
-    by aggregating over each day
-    """
-
-    if country:
-        if country not in np.unique(df_orig['country'].values):
-            raise Excpetion("country not found")
-    
-        mask = df_orig['country'] == country
-        df = df_orig[mask]
-    else:
-        df = df_orig
-        
-    ## use a date range to ensure all days are accounted for in the data
-    invoice_dates = df['invoice_date'].values
-    start_month = '{}-{}'.format(df['year'].values[0],str(df['month'].values[0]).zfill(2))
-    stop_month = '{}-{}'.format(df['year'].values[-1],str(df['month'].values[-1]).zfill(2))
-    df_dates = df['invoice_date'].values.astype('datetime64[D]')
-    days = np.arange(start_month,stop_month,dtype='datetime64[D]')
-    
-    purchases = np.array([np.where(df_dates==day)[0].size for day in days])
-    invoices = [np.unique(df[df_dates==day]['invoice'].values).size for day in days]
-    streams = [np.unique(df[df_dates==day]['stream_id'].values).size for day in days]
-    views =  [df[df_dates==day]['times_viewed'].values.sum() for day in days]
-    revenue = [df[df_dates==day]['price'].values.sum() for day in days]
-    year_month = ["-".join(re.split("-",str(day))[:2]) for day in days]
-
-    df_time = pd.DataFrame({'date':days,
-                            'purchases':purchases,
-                            'unique_invoices':invoices,
-                            'unique_streams':streams,
-                            'total_views':views,
-                            'year_month':year_month,
-                            'revenue':revenue})
-    return(df_time)
-
+def convert_to_ts(df_all,country ='United Kingdom'): 
+    try:     
+        df= df_all[df_all.country==country] 
+        df['date'] = pd.to_datetime(df[['year', 'month', 'day']],format='%Y%m%d')
+        df_agg = df.groupby('date',as_index=False)[['price','times_viewed']].agg({'price':['sum','count'],'times_viewed':'sum'})
+        df_agg.columns = ['date','revenue','purchases','total_views']
+        df_agg['unique_streams'] = df.groupby('date',as_index=False)['stream_id'].transform(lambda x:x.nunique())
+        df_agg['unique_invoices'] = df.groupby('date',as_index=False)['invoice'].transform(lambda x:x.nunique())
+    #    fill empty date
+        df_agg = df_agg.set_index(df_agg['date'])
+        df_agg.index = pd.DatetimeIndex(df_agg.index)
+        idx = pd.date_range(df_agg.index.min(), df_agg.index.max())
+        df_agg = df_agg.reindex(idx, fill_value=0)
+    except Exception as e:
+        logging.exception("agg failed",exc_info=True)
+    return df_agg
 
 def fetch_ts(data_dir, clean=False):
     """
@@ -125,12 +78,13 @@ def fetch_ts(data_dir, clean=False):
 
     ## if files have already been processed load them        
     if len(os.listdir(ts_data_dir)) > 0:
-        print("... loading ts data from files")
+        logging.debug("skip json file and loading file from csv file")
         return({re.sub("\.csv","",cf)[3:]:pd.read_csv(os.path.join(ts_data_dir,cf)) for cf in os.listdir(ts_data_dir)})
 
     ## get original data
     print("... processing data for loading")
     df = fetch_data(data_dir)
+    print(df.columns)
 
     ## find the top ten countries (wrt revenue)
     table = pd.pivot_table(df,index='country',values="price",aggfunc='sum')
@@ -204,33 +158,43 @@ def engineer_features(df,training=True):
 
     X = pd.DataFrame(eng_features)
     ## combine features in to df and remove rows with all zeros
-#    X.fillna(0,inplace=True)
-#    mask = X.sum(axis=1)>0
+    X.fillna(0,inplace=True)
+    mask = X.sum(axis=1)>0
     X = X[mask]
     y = y[mask]
     dates = dates[mask]
     X.reset_index(drop=True, inplace=True)
 
-    if training == True:
-        ## remove the last 30 days (because the target is not reliable)
-        mask = np.arange(X.shape[0]) < np.arange(X.shape[0])[-30]
-        X = X[mask]
-        y = y[mask]
-        dates = dates[mask]
-        X.reset_index(drop=True, inplace=True)
-    
+#    if training == True:
+#        ## remove the last 30 days (because the target is not reliable)
+#        mask = np.arange(X.shape[0]) < np.arange(X.shape[0])[-30]
+#        X = X[mask]
+#        y = y[mask]
+#        dates = dates[mask]
+#        X.reset_index(drop=True, inplace=True)
+#    
     return(X,y,dates)
+    
+def convert(seconds): 
+    seconds = seconds % (24 * 3600) 
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+      
+    return "%d:%02d:%02d" % (hour, minutes, seconds) 
+
 if __name__ == "__main__":
+    from os import path
+    file_path = path.dirname(__file__)
+    data_dir = path.abspath(path.join(file_path ,"..","cs-train"))
+    run_start = time.time()
+    print(f"...fetching data from {data_dir}")
 
-    run_start = time.time() 
-    data_dir = os.path.join("..","data","cs-train")
-    print("...fetching data")
+    ts_all = fetch_ts(data_dir,clean=True)
 
-    ts_all = fetch_ts(data_dir,clean=False)
-
-    m, s = divmod(time.time()-run_start,60)
-    h, m = divmod(m, 60)
-    print("load time:", "%d:%02d:%02d"%(h, m, s))
+    run_time = convert(time.time()-run_start,60)
+    print("load time:", "%s"%(run_time))
 
     for key,item in ts_all.items():
         print(key,item.shape)

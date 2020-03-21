@@ -7,12 +7,15 @@ import json
 import numpy as np
 import pandas as pd
 import os
-
+from os import path
+import sys
 ## import model specific functions and variables
-from model import model_train, model_load, model_predict
-from model import MODEL_VERSION, MODEL_VERSION_NOTE
 
-app = Flask(__name__)
+from src.model import model_train, model_load, model_predict
+from src.model import MODEL_VERSION, MODEL_VERSION_NOTE
+
+temp_folder = path.join(path.dirname(__file__),'templates')
+app = Flask(__name__ ,template_folder = temp_folder)
 
 @app.route("/")
 def landing():

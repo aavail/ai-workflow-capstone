@@ -6,7 +6,14 @@ model tests
 
 import unittest
 ## import model specific functions and variables
-from model import *
+import os,sys
+from os import path
+wdir = path.join(path.dirname(__file__),'..')
+sys.path.append(wdir)
+from src.model import model_train,model_load,model_predict
+MODEL_PATH = path.join(wdir,'models')
+DATA_PATH = path.join(wdir,'cs-train')
+LOG_PATH = path.join(wdir,'log')
 
 class ModelTest(unittest.TestCase):
     """
@@ -19,8 +26,11 @@ class ModelTest(unittest.TestCase):
         """
 
         ## train the model
-        model_train()
-        self.assertTrue(os.path.exists(SAVED_MODEL))
+        model_train(DATA_PATH,'unittest',False,'germany')
+        trained_model = path.join(MODEL_PATH,'unittest-germany-0_1.joblib')
+        self.assertTrue(os.path.exists(trained_model))
+#        os.remove(trained_model)
+        
 
     def test_02_load(self):
         """
@@ -28,7 +38,9 @@ class ModelTest(unittest.TestCase):
         """
                         
         ## load the model
-        model = model_load()
+        _,models = model_load('germany')
+#        print(models)
+        model = list(models.values())[0]
         self.assertTrue('predict' in dir(model))
         self.assertTrue('fit' in dir(model))
 
@@ -38,13 +50,16 @@ class ModelTest(unittest.TestCase):
         """
 
         ## load model first
-        model = model_load()
-        
+        country='all'
+        year='2018'
+        month='01'
+        day='05'
+        result = model_predict(country,year,month,day)
         ## example predict
-        for query in [np.array([[6.1,2.8]]), np.array([[7.7,2.5]]), np.array([[5.8,3.8]])]:
-            result = model_predict(query,model)
-            y_pred = result['y_pred']
-            self.assertTrue(y_pred in [0,1,2])
+        self.assertTrue(result is not None)
+
+        
+        
 
         
 ### Run the tests
