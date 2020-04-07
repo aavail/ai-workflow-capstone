@@ -82,7 +82,7 @@ def _model_train(df =None,prefix ='sl',country=None,test=False):
     update_train_log(country,X.shape,date_range,{'rmse':eval_rmse},runtime,MODEL_VERSION, MODEL_VERSION_NOTE)
   
 
-def model_train(data_dir,prefix,test=False,for_country = False):
+def model_train(data_dir,prefix ='sl',test=False,for_country = False):
     """
     funtion to train model given a df
     
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     print("TRAINING MODELS")
     from os import path
     data_dir = path.join(path.dirname(__file__),'..',"cs-train")
-    model_train(data_dir,test=False)
+    model_train('',data_dir,test=False)
 
     ## load the model
     print("LOADING MODELS")
