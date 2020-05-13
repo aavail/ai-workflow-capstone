@@ -1,0 +1,33 @@
+
+<!-- extends from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<p>
+<h3>Example Dashboard</h3>
+</p>
+
+
+<div class="jumbotron">
+ <p class="lead"></p>
+
+<h3>Learning Curve from latest training</h3>
+<br>
+<form action="running" method="post">
+  <input class="btn btn-default" type="submit" value="Re-create">
+</form>
+</div>
+
+
+<div class="jumbotron">
+ <p class="lead"></p>
+
+<h3>Performance drift visualization</h3>
+<br>
+<form action="running" method="post">
+  <input class="btn btn-default" type="submit" value="Re-create">
+</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+0299fbde-38db-4930-add4-d4e68e4f09a0,1584588317.5828626,|('2019-07-07', '2019-07-30')|,{'rmse': 22686.0},000:00:11,0.1,supervised learing model for time-series,True
+8c0ea9df-7911-483b-b476-6d06a0f0a946,1584588328.061311,|('2019-07-02', '2019-07-22')|,{'rmse': 8452.0},000:00:10,0.1,supervised learing model for time-series,True
+672eef13-0a7d-4b8c-88c9-4ab816c89785,1584589105.7385206,|(8, 7)|,all,2019-07-03 - 2019-07-24,{'rmse': 21159.0},000:00:10,0.1,supervised learing model for time-series
+d6595622-fbdd-40ee-a8d5-e9c8589087ef,1584589116.1539223,|(8, 7)|,united_kingdom,2019-07-01 - 2019-07-30,{'rmse': 19506.0},000:00:10,0.1,supervised learing model for time-series
+99dd334a-2cf5-4139-8d3e-c10b5a255023,1584589325.4848967,|(8, 7)|,all,2019-07-10 - 2019-07-25,{'rmse': 8413.0},000:00:10,0.1,supervised learing model for time-series
+b51e4b9c-7aab-4b10-8c6f-92d92d6f36ea,1584589335.955337,|(8, 7)|,united_kingdom,2019-07-02 - 2019-07-28,{'rmse': 24581.0},000:00:10,0.1,supervised learing model for time-series
+63b58642-22b6-4bd0-87d3-f6a54c0ad99e,1584589361.6936278,|(8, 7)|,all,2019-07-05 - 2019-07-30,{'rmse': 19071.0},000:00:10,0.1,supervised learing model for time-series
+944e1a20-ba0f-4bd3-bbe9-6b0ca41d230a,1584589372.1440563,|(8, 7)|,united_kingdom,2019-07-02 - 2019-07-25,{'rmse': 18278.0},000:00:10,0.1,supervised learing model for time-series
+f517687a-3eea-44f9-ad6d-16c222196506,1584589605.0203998,|(8, 7)|,all,2019-07-04 - 2019-07-30,{'rmse': 34760.0},000:00:10,0.1,supervised learing model for time-series
+8ab198bc-58f0-4c43-9394-e46d851c96bb,1584589615.7190053,|(8, 7)|,united_kingdom,2019-07-02 - 2019-07-28,{'rmse': 34626.0},000:00:10,0.1,supervised learing model for time-series
+409cf87a-7834-40ad-92eb-c506e2d90341,1584590076.1429677,|(26, 7)|,all,2019-07-01 - 2019-07-30,{'rmse': 19408.0},000:00:10,0.1,supervised learing model for time-series
+3b70ee2f-ae29-4d6b-9875-d94e2d14b0a7,1584590127.5645225,|(26, 7)|,all,2019-07-01 - 2019-07-30,{'rmse': 19834.0},000:00:10,0.1,supervised learing model for time-series
+8dc782d9-9f79-47bd-8fd6-70730212f0fb,1584630401.0258572,|(26, 7)|,all,2019-07-01 - 2019-07-30,{'rmse': 13304.0},000:00:10,0.1,supervised learing model for time-series
+f0a904f6-7d78-4e33-8990-b81e249285aa,1584630638.954014,|(26, 7)|,all,2019-07-01 - 2019-07-30,{'rmse': 16527.0},000:00:10,0.1,supervised learing model for time-series
+8faa62bc-cdad-4596-9c46-7b4a028cc093,1584630707.996052,|(494, 7)|,all,2017-11-29 - 2019-07-31,{'rmse': 84389.0},000:00:12,0.1,supervised learing model for time-series
+8b0b4e87-6d4f-4e47-ad41-494fc682476f,1584630719.5982895,|(292, 7)|,eire,2017-11-30 - 2019-07-28,{'rmse': 4218.0},000:00:11,0.1,supervised learing model for time-series
+c1352fa1-c830-4ada-9930-13c177442b5c,1584630731.0103986,|(284, 7)|,france,2017-11-29 - 2019-07-31,{'rmse': 1064.0},000:00:11,0.1,supervised learing model for time-series
+25c41a6d-3b76-4336-8acc-2cc58afe687e,1584630742.9738922,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 890.0},000:00:11,0.1,supervised learing model for time-series
+83f8bd8e-1638-4f46-afbb-b859ea79b29d,1584630752.470641,|(7, 7)|,hong_kong,2018-05-23 - 2019-06-19,{'rmse': 1776.0},000:00:09,0.1,supervised learing model for time-series
+0f9ffb97-e357-47ee-9a52-c519238d6192,1584630763.2877438,|(132, 7)|,netherlands,2017-12-01 - 2019-07-17,{'rmse': 200.0},000:00:10,0.1,supervised learing model for time-series
+d9b00061-174c-4d3e-a718-c73b58af8bfa,1584630773.7511685,|(15, 7)|,norway,2018-09-13 - 2019-07-19,{'rmse': 886.0},000:00:10,0.1,supervised learing model for time-series
+cfed79c1-95b8-4d20-b59c-b6f21654ed0d,1584630786.1359649,|(71, 7)|,portugal,2017-12-05 - 2019-07-31,{'rmse': 1281.0},000:00:12,0.1,supervised learing model for time-series
+63e1424f-46ba-4790-92b8-a5b9209160d2,1584636971.012992,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1562.0},0:00:09,0.1,supervised learing model for time-series
+7b856841-7cdf-4dcc-8ebc-58bd3c241631,1584637174.415211,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1201.0},0:00:09,0.1,supervised learing model for time-series
+e1670659-2020-4279-be93-9666759f4ad0,1584637199.284873,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1654.0},0:00:09,0.1,supervised learing model for time-series
+f2d2f6a2-6a31-43b5-9e94-bebd34e1748a,1584637264.6131291,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1572.0},0:00:09,0.1,supervised learing model for time-series
+24129207-7b8f-4c12-a923-670bd3fcf240,1584637393.2832608,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1601.0},0:00:09,0.1,supervised learing model for time-series
+2200db87-f61e-484f-91d4-7d10802e9859,1584637458.0622926,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1516.0},0:00:09,0.1,supervised learing model for time-series
+616cbc8e-59c9-4423-b39e-bded45d6a4be,1584637576.0598392,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1675.0},0:00:09,0.1,supervised learing model for time-series
+68b706b4-ff67-4b50-b028-0bedcad8a3ec,1584637615.728016,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1377.0},0:00:09,0.1,supervised learing model for time-series
+124b9233-4770-485a-a2ad-76df92a0b7be,1584637651.1501727,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1531.0},0:00:09,0.1,supervised learing model for time-series
+56d6b5b4-4fb2-40de-b21e-56b016c21388,1584637684.504863,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1287.0},0:00:09,0.1,supervised learing model for time-series
+9ecac568-4467-4b58-b5cb-57a798bd8fa7,1584639165.8387258,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1348.0},0:00:10,0.1,supervised learing model for time-series
+a1077a67-c312-49b9-a08f-12504e530f10,1584639323.6045082,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1372.0},0:00:10,0.1,supervised learing model for time-series
+69d44fcc-84e2-4705-8b11-9e46c7c51fac,1584747971.0050347,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1524.0},0:00:09,0.1,supervised learing model for time-series
+751e56b4-fa74-48bd-b2e7-e1fef14d1fe2,1584748066.2924132,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1373.0},0:00:09,0.1,supervised learing model for time-series
+5a1ae56b-9687-41fb-9c9d-ae07f724c3ad,1584748113.2748046,|(358, 7)|,germany,2017-11-29 - 2019-07-31,{'rmse': 1526.0},0:00:09,0.1,supervised learing model for time-series
