@@ -1,0 +1,3 @@
+unique_id,timestamp,country,date_range,metric,model_version,model_version_note,runtime,mode
+82ba262e-6b94-4ffc-a203-29753ee9b987,1590954791.6024861,all,|('2017-11-29', '2019-05-24')|,{'rmse': 65799.0},0.1,supervised learing model for time-series,000:00:09,test
+a5630c8a-2d61-45a5-a169-d508f9eb9ba8,1590954802.07169,portugal,|('2017-11-29', '2019-05-31')|,{'rmse': 169.0},0.1,supervised learing model for time-series,000:00:10,prod

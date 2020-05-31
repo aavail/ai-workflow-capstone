@@ -1,0 +1,8 @@
+joblib
+matplotlib
+cython
+numpy
+flask
+pandas
+sklearn
+requests

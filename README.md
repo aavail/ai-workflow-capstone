@@ -1,51 +1,22 @@
+# Project Execution Instructions
+## Run the model directly
+`python3 model.py`
+
+## Run the unittests
+### Model Tests
+All tests - `python3 -m unittest unittests/ModelTests.py`
+Specific test - `python3 -m unittest unittests.ModelTest.test_02_load`
+
+### Logger Tests
+All tests - `python3 -m unittest unittests/LoggerTests.py`
+Specific test - `python3 -m unittest unittests.ModelTest.test_02_predict`
+
 # IBM AI Enterprise Workflow Capstone
 Files for the IBM AI Enterprise Workflow Capstone project. 
 
-## Part 1
+### Case study part 1 - The notebook capstone-case-study.ipynb contains all the findings
 
-### Case study part 1
-
-At this point in the project, and in any data science project really, it is best to loosly organize your code as libraries and scripts.  Jupyter notebooks are a convenient and powerful tool, but we have mentioned several times that they are not a good place for source code to live.  If you decide to use a notebook for this part, we recommend that it is used to run functions that live within a [python module](https://docs.python.org/3/tutorial/modules.html).
-
-### Deliverable goals
-
-Overall this part of the case study is meant to tell the story of the data by investigating the relationship between the data and the business opportunity.
-
-> (1) Assimilate the business scenario and articulate testable hypotheses.
-
-Take what you have read from the stories and from what you know about the business scenario and, in your own words, carefully re-state the business opportunity.  Given the stated opportunity, enumerate the testable hypotheses.
-
-> (2) State the ideal data to address the business opportunity and clarify the rationale for needing specific data.
-
-Note that this step is carried out **before you read in the data**.  It helps clarify exactly what your are looking for in the data and it helps provide context for what the feature matrix and targets will look like.
-
-3. Create a python script to extract relevant data from multiple data sources, automating the process of data ingestion.
-
-From within a Python module there should be a function that reads in the data, attempts to catch common input errors and returns a feature matrix (NumPy array or Pandas DataFrame) that will subsequently be used as a starting point for EDA and modeling.
-
-4. Investigate the relationship between the relevant data, the target and the business metric.
-
-Using the feature matrix and the tools abvailable to you through EDA spend some time to get to know the data.
-
-5. Articulate your findings using a deliverable with visualizations.
-
-Summarize what you have learned in your investigations using visualizations.
-
-### Hints
-
-* The JSON files may not contain uniformly named features. Be sure to account for this in your data ingestion function.
-* Some of the invoice ids (`invoice`) have letters that can be removed to improve matching.
-* One common way to ready time-series data for modeling is to aggregate the transactions by day. Getting the data into this form will help you prepare for part 2.
-* If you have not worked with time-series or time-stamped data before the following two links can be useful.
-
-  * [NumPy datetime](https://docs.scipy.org/doc/numpy/reference/arrays.datetime.html)
-  * [Pandas time-series](https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html)
-  * [matplotlib time-series plot](https://matplotlib.org/3.1.1/gallery/text_labels_and_annotations/date.html)
-
-
-## Part 2
-
-### Case study part 2
+### Case study part 2 - The code provided in solution-guidance has been modified to take model as parameter and also work for specific set of countries. The notebook capstone-case-study.ipynb contains details for iterating on different models.
 
 Time-series analysis is a subject area that has many varied methods and a great potential for customized solutions.
 We cannot cover the breadth and depth of this important area of data science in a single case study. We do 

@@ -14,11 +14,12 @@ from logger import update_predict_log, update_train_log
 from cslib import fetch_ts, engineer_features
 
 ## model specific variables (iterate the version and note with each change)
-MODEL_DIR = "models"
+MODEL_DIR = os.path.join(os.path.dirname(__file__), '..', "models")
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'cs-train')
 MODEL_VERSION = 0.1
 MODEL_VERSION_NOTE = "supervised learing model for time-series"
 
-def _model_train(df,tag,test=False):
+def _model_train(prefix,df,tag,test=False):
     """
     example funtion to train model
     
@@ -27,8 +28,6 @@ def _model_train(df,tag,test=False):
         (2) specifies that the use of the 'test' log file 
 
     """
-
-
     ## start timer for runtime
     time_start = time.time()
     
@@ -55,7 +54,7 @@ def _model_train(df,tag,test=False):
     pipe_rf = Pipeline(steps=[('scaler', StandardScaler()),
                               ('rf', RandomForestRegressor())])
     
-    grid = GridSearchCV(pipe_rf, param_grid=param_grid_rf, cv=5, iid=False, n_jobs=-1)
+    grid = GridSearchCV(pipe_rf, param_grid=param_grid_rf, cv=5, n_jobs=-1)
     grid.fit(X_train, y_train)
     y_pred = grid.predict(X_test)
     eval_rmse =  round(np.sqrt(mean_squared_error(y_test,y_pred)))
@@ -63,13 +62,14 @@ def _model_train(df,tag,test=False):
     ## retrain using all data
     grid.fit(X, y)
     model_name = re.sub("\.","_",str(MODEL_VERSION))
+    
     if test:
         saved_model = os.path.join(MODEL_DIR,
                                    "test-{}-{}.joblib".format(tag,model_name))
         print("... saving test version of model: {}".format(saved_model))
     else:
         saved_model = os.path.join(MODEL_DIR,
-                                   "sl-{}-{}.joblib".format(tag,model_name))
+                                   "{}-{}-{}.joblib".format(prefix,tag,model_name))
         print("... saving model: {}".format(saved_model))
         
     joblib.dump(grid,saved_model)
@@ -80,13 +80,12 @@ def _model_train(df,tag,test=False):
 
     ## update log
     update_train_log(tag,(str(dates[0]),str(dates[-1])),{'rmse':eval_rmse},runtime,
-                     MODEL_VERSION, MODEL_VERSION_NOTE,test=True)
+                     MODEL_VERSION, MODEL_VERSION_NOTE,test=test)
   
 
-def model_train(data_dir,test=False):
+def model_train(prefix='sl', data_dir=DATA_DIR, test=False, countries=False):
     """
-    funtion to train model given a df
-    
+    funtion to train model given a df    
     'mode' -  can be used to subset data essentially simulating a train
     """
     
@@ -103,13 +102,15 @@ def model_train(data_dir,test=False):
 
     ## train a different model for each data sets
     for country,df in ts_data.items():
-        
-        if test and country not in ['all','united_kingdom']:
+        # only train model for all and uk in test mode
+        if test and country not in ['all','united_kingdom']: 
             continue
-        
-        _model_train(df,country,test=test)
+        # only train model for country in countries
+        if countries and not (country in countries):
+            continue
+        _model_train(prefix, df,country,test=test)
     
-def model_load(prefix='sl',data_dir=None,training=True):
+def model_load(prefix='sl',data_dir=DATA_DIR,training=True,countries=False):
     """
     example funtion to load model
     
@@ -119,26 +120,29 @@ def model_load(prefix='sl',data_dir=None,training=True):
     if not data_dir:
         data_dir = os.path.join("..","data","cs-train")
     
-    models = [f for f in os.listdir(os.path.join(".","models")) if re.search("sl",f)]
+    models = [f for f in os.listdir(MODEL_DIR) if re.search(prefix,f)]
 
     if len(models) == 0:
         raise Exception("Models with prefix '{}' cannot be found did you train?".format(prefix))
 
     all_models = {}
     for model in models:
-        all_models[re.split("-",model)[1]] = joblib.load(os.path.join(".","models",model))
+        if not countries or re.split("-",model)[1] in countries:
+            all_models[re.split("-",model)[1]] = joblib.load(os.path.join(MODEL_DIR, model))
 
     ## load data
     ts_data = fetch_ts(data_dir)
     all_data = {}
     for country, df in ts_data.items():
+        if countries and not country in countries:
+            continue
         X,y,dates = engineer_features(df,training=training)
         dates = np.array([str(d) for d in dates])
         all_data[country] = {"X":X,"y":y,"dates": dates}
         
     return(all_data, all_models)
 
-def model_predict(country,year,month,day,all_models=None,test=False):
+def model_predict(country,year,month,day,all_models=None,test=False, prefix='sl'):
     """
     example funtion to predict from model
     """
@@ -201,10 +205,15 @@ if __name__ == "__main__":
     basic test procedure for model.py
     """
 
+    ## train the model - Test
+    #print("TRAINING MODELS - TEST")
+    #data_dir = os.path.join("..","data","cs-train")
+    #model_train(data_dir,test=True)
+
     ## train the model
-    print("TRAINING MODELS")
-    data_dir = os.path.join("..","data","cs-train")
-    model_train(data_dir,test=True)
+    #print("TRAINING MODELS")
+    #data_dir = os.path.join("..","data","cs-train")
+    #model_train(data_dir,test=False)
 
     ## load the model
     print("LOADING MODELS")
