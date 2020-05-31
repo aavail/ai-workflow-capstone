@@ -1,11 +1,12 @@
-import time,os,re,csv,sys,uuid,joblib
+AAimport time,os,re,csv,sys,uuid,joblib
+import getopt
 from datetime import date
 from collections import defaultdict
 import numpy as np
 import pandas as pd
 from sklearn import svm
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
@@ -18,8 +19,12 @@ MODEL_DIR = os.path.join(os.path.dirname(__file__), '..', "models")
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'cs-train')
 MODEL_VERSION = 0.1
 MODEL_VERSION_NOTE = "supervised learing model for time-series"
-
-def _model_train(prefix,df,tag,test=False):
+DEFAULT_MODEL = RandomForestRegressor()
+DEFAULT_PARAM_GRID = {
+    'rf__criterion': ['mse','mae'],
+    'rf__n_estimators': [10,15,20,25]
+}
+def _model_train(prefix,df,tag,test=False, model=DEFAULT_MODEL, model_param_grid=DEFAULT_PARAM_GRID):
     """
     example funtion to train model
     
@@ -45,16 +50,12 @@ def _model_train(prefix,df,tag,test=False):
     ## Perform a train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25,
                                                         shuffle=True, random_state=42)
-    ## train a random forest model
-    param_grid_rf = {
-    'rf__criterion': ['mse','mae'],
-    'rf__n_estimators': [10,15,20,25]
-    }
+
 
     pipe_rf = Pipeline(steps=[('scaler', StandardScaler()),
-                              ('rf', RandomForestRegressor())])
+                              ('rf', model)])
     
-    grid = GridSearchCV(pipe_rf, param_grid=param_grid_rf, cv=5, n_jobs=-1)
+    grid = GridSearchCV(pipe_rf, param_grid=model_param_grid, cv=5, n_jobs=-1)
     grid.fit(X_train, y_train)
     y_pred = grid.predict(X_test)
     eval_rmse =  round(np.sqrt(mean_squared_error(y_test,y_pred)))
@@ -83,7 +84,8 @@ def _model_train(prefix,df,tag,test=False):
                      MODEL_VERSION, MODEL_VERSION_NOTE,test=test)
   
 
-def model_train(prefix='sl', data_dir=DATA_DIR, test=False, countries=False):
+def model_train(prefix='sl', data_dir=DATA_DIR, test=False, countries=False,
+                model=DEFAULT_MODEL, model_param_grid=DEFAULT_PARAM_GRID):
     """
     funtion to train model given a df    
     'mode' -  can be used to subset data essentially simulating a train
@@ -108,7 +110,7 @@ def model_train(prefix='sl', data_dir=DATA_DIR, test=False, countries=False):
         # only train model for country in countries
         if countries and not (country in countries):
             continue
-        _model_train(prefix, df,country,test=test)
+        _model_train(prefix, df,country,test=test, model=model, model_param_grid=model_param_grid)
     
 def model_load(prefix='sl',data_dir=DATA_DIR,training=True,countries=False):
     """
@@ -199,31 +201,55 @@ def model_predict(country,year,month,day,all_models=None,test=False, prefix='sl'
     
     return({'y_pred':y_pred,'y_proba':y_proba})
 
+def parse_argv(argv):
+    try:
+        opts, args = getopt.getopt(argv,"ht:m:c:",["training=","model=","countries="])
+    except getopt.GetoptError:
+        print('model.py -t <training> -m <model> -c <countries>')
+        sys.exit(2)
+    train = ""
+    model = RandomForestRegressor()
+    countries = ['all', 'portugal', 'united_kingdom', 'hong_kong', 'eire',
+                 'spain', 'france', 'singapore', 'norway', 'germany', 'netherlands']
+    for opt, arg in opts:
+        if opt == '-h':
+            print('model.py -t <training> -m <model> -c <countries>')
+            sys.exit()
+        elif opt in ("-t", "--training"):
+            train = arg == 'test' and 'test' or 'prod'
+        elif opt in ("-m", "--model"):
+            model = arg == 'rf' and RandomForestRegressor() or ExtraTreesRegressor()
+        elif opt in ("-c", "--countries"):
+            countries = arg.split(',')
+        else:
+            print('model.py -t <training> -m <model> -c <countries>')
+            sys.exit(2)
+    print (train, model, countries)
+    return (train, model, countries)
+            
 if __name__ == "__main__":
-
     """
     basic test procedure for model.py
     """
+    (train, model, countries) = parse_argv(sys.argv[1:])
+    if train == 'test':
+        ## train the model - Test
+        print("TRAINING MODELS - TEST")
+        model_train(data_dir=DATA_DIR, test=True, model=model, countries=countries)
+    elif train == 'prod':
+        ## train the model
+        print("TRAINING MODELS")
+        model_train(data_dir=DATA_DIR, test=False, model=model, countries=countries)
+    else:
+        ## load the model
+        print("LOADING MODELS")
+        all_data, all_models = model_load(training=False, countries=countries)
+        print("... models loaded: ",",".join(all_models.keys()))
 
-    ## train the model - Test
-    #print("TRAINING MODELS - TEST")
-    #data_dir = os.path.join("..","data","cs-train")
-    #model_train(data_dir,test=True)
-
-    ## train the model
-    #print("TRAINING MODELS")
-    #data_dir = os.path.join("..","data","cs-train")
-    #model_train(data_dir,test=False)
-
-    ## load the model
-    print("LOADING MODELS")
-    all_data, all_models = model_load()
-    print("... models loaded: ",",".join(all_models.keys()))
-
-    ## test predict
-    country='all'
-    year='2018'
-    month='01'
+    ## test predict    
+    year='2019'
+    month='06'
     day='05'
-    result = model_predict(country,year,month,day)
-    print(result)
+    for country in countries:
+        result = model_predict(country,year,month,day)
+        print("Predicted revenue for {} is {}".format(country, result['y_pred'][0]))

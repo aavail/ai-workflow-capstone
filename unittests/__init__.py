@@ -22,8 +22,8 @@ for o, a in optlist:
         VERBOSE = True
 
 ## api tests
-from ApiTests import *
-ApiTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiTest)
+#from ApiTests import *
+#ApiTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiTest)
 
 ## model tests
 from ModelTests import *
@@ -33,4 +33,4 @@ ModelTestSuite = unittest.TestLoader().loadTestsFromTestCase(ModelTest)
 from LoggerTests import *
 LoggerTestSuite = unittest.TestLoader().loadTestsFromTestCase(LoggerTest)
 
-MainSuite = unittest.TestSuite([LoggerTestSuite,ModelTestSuite,ApiTestSuite])
+MainSuite = unittest.TestSuite([LoggerTestSuite,ModelTestSuite]) #,ApiTestSuite
