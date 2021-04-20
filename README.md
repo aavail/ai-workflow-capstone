@@ -13,5 +13,14 @@ Install required dependencies
 Run logging tests
 ```python ./unittests/LoggerTests.py```
 
+Get server running in separate window
+```python ./app.py -d```
+
 Run API tests
-```!python ./unittests/ApiTests.py```
+```python ./unittests/ApiTests.py```
+
+Run all tests
+```python ./run-tests.py```
+
+Run Model training
+```python run-model-train.py```
