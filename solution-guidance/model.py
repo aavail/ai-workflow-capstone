@@ -203,7 +203,7 @@ if __name__ == "__main__":
 
     ## train the model
     print("TRAINING MODELS")
-    data_dir = os.path.join("..","data","cs-train")
+    data_dir = os.path.join("..","cs-train")
     model_train(data_dir,test=True)
 
     ## load the model
