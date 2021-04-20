@@ -55,7 +55,7 @@ def _model_train(df,tag,test=False):
     pipe_rf = Pipeline(steps=[('scaler', StandardScaler()),
                               ('rf', RandomForestRegressor())])
     
-    grid = GridSearchCV(pipe_rf, param_grid=param_grid_rf, cv=5, iid=False, n_jobs=-1)
+    grid = GridSearchCV(pipe_rf, param_grid=param_grid_rf, cv=5, n_jobs=-1)
     grid.fit(X_train, y_train)
     y_pred = grid.predict(X_test)
     eval_rmse =  round(np.sqrt(mean_squared_error(y_test,y_pred)))
@@ -80,7 +80,7 @@ def _model_train(df,tag,test=False):
 
     ## update log
     update_train_log(tag,(str(dates[0]),str(dates[-1])),{'rmse':eval_rmse},runtime,
-                     MODEL_VERSION, MODEL_VERSION_NOTE,test=True)
+                     MODEL_VERSION, MODEL_VERSION_NOTE)
   
 
 def model_train(data_dir=None,test=False):
@@ -94,7 +94,7 @@ def model_train(data_dir=None,test=False):
         os.mkdir(MODEL_DIR)
         
     if not data_dir:
-        data_dir = os.path.join(-train")
+        data_dir = os.path.join("cs-train")
 
     if test:
         print("... test flag on")
@@ -120,7 +120,7 @@ def model_load(prefix='sl',data_dir=None,training=True):
     """
 
     if not data_dir:
-        data_dir = os.path.join("..","data","cs-train")
+        data_dir = os.path.join(".","cs-train")
     
     models = [f for f in os.listdir(os.path.join(".","models")) if re.search("sl",f)]
 

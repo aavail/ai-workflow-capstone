@@ -222,7 +222,7 @@ def engineer_features(df,training=True):
 if __name__ == "__main__":
 
     run_start = time.time() 
-    data_dir = os.path.join("..","data","cs-train")
+    data_dir = os.path.join("..","cs-train")
     print("...fetching data")
 
     ts_all = fetch_ts(data_dir,clean=False)
