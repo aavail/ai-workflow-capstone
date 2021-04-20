@@ -1,3 +1,3 @@
 unique_id,timestamp,y_pred,y_proba,query,model_version,runtime
-add14177-0ce2-4092-ae32-786375289338,1618923095.330164,[0],"[0.6, 0.4]","['united_states', 24, 'aavail_basic', 8]",0.1,00:00:02
-15ae0c75-9781-4d75-a3f3-fc1843c801b3,1618923095.3303921,[0],"[0.6, 0.4]","['united_states', 24, 'aavail_basic', 8]",0.1,00:00:02
+4b3a3847-e190-4b55-ac07-d26abecdb458,1618925648.038152,[0],"[0.6, 0.4]","['united_states', 24, 'aavail_basic', 8]",0.1,00:00:02
+96b16fc0-ee56-472f-93ba-8097c8ac456b,1618925648.038424,[0],"[0.6, 0.4]","['united_states', 24, 'aavail_basic', 8]",0.1,00:00:02

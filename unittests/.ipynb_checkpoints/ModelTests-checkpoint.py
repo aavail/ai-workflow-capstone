@@ -25,18 +25,18 @@ class ModelTest(unittest.TestCase):
 
         ## train the model
         model_train(test=True)
-        self.assertTrue(os.path.exists(os.path.join("models", "test.joblib")))
+        self.assertTrue(os.path.exists(os.path.join("models", "test-all-0_1.joblib")))
 
     def test_02_load(self):
         """
-        test the train functionality
+        test the load functionality
         """
                         
-        ## train the model
-        model = model_load(test=True)
+        ## load the model
+        data, models = model_load()
         
-        self.assertTrue('predict' in dir(model))
-        self.assertTrue('fit' in dir(model))
+        self.assertTrue('predict' in dir(models['eire']))
+        self.assertTrue('fit' in dir(models['eire']))
 
        
     def test_03_predict(self):
@@ -44,19 +44,12 @@ class ModelTest(unittest.TestCase):
         test the predict function input
         """
 
-        ## load model first
-        model = model_load(test=True)
-    
-        ## ensure that a list can be passed
-        query = {'country': ['united_states','singapore','united_states'],
-                 'age': [24,42,20],
-                 'subscriber_type': ['aavail_basic','aavail_premium','aavail_basic'],
-                 'num_streams': [8,17,14]
-        }
+       ## ensure that a list can be passed
+        query = {'country': 'all', 'year': '2018', 'month': '01', 'day': '05', 'model': 'sl'}
 
-        result = model_predict(query, model, test=True)
+        result = model_predict(query, test=True)
         y_pred = result['y_pred']
-        self.assertTrue(y_pred[0] in [0,1])
+        self.assertTrue(y_pred[0] > 0)
 
           
 ### Run the tests
