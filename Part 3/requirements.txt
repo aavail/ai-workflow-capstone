@@ -1,0 +1,9 @@
+
+cython
+numpy
+flask
+pandas
+scikit-learn
+matplotlib
+requests
+xgboost
