@@ -1,0 +1,6 @@
+cs-train/
+cs-production/
+ibm_ai_env/
+solution-guidance/
+requirements.txt
+.vscode/
