@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 
-# Laod all json formatted files into a dataframe
+## Laod all json formatted files into a dataframe
 def load_json_data(data_dir) :
     """
     laod all json formatted files into a dataframe
@@ -53,9 +53,9 @@ def load_json_data(data_dir) :
     df['month'] = df['month'].astype(int)                      # Convert to integer
     df['day'] = df['day'].astype(int)                          # Convert to integer
     
-    ## Adding a invoice_date column to the dataframe & convert it to the appropriate data type
+    ## Adding a date column to the dataframe & convert it to the appropriate data type
     years,months,days = df['year'].values,df['month'].values,df['day'].values 
-    dates = ["{}-{}-{}".format(years[i],str(months[i]).zfill(2),str(days[i]).zfill(2)) for i in range(df.shape[0])]
+    dates = [ "{}-{}-{}".format( years[i] , str(months[i]).zfill(2) , str(days[i]).zfill(2) ) for i in range(df.shape[0] ) ]
     df['date'] = pd.to_datetime(dates).normalize()
     df['date'] = pd.to_datetime(dates).date
 
@@ -73,59 +73,66 @@ def load_json_data(data_dir) :
     df = df[columns_reordered]
 
     
-    ## Sort the DataFrame by the columns_reordred where the most recent dates are at the top.
-    df.sort_values(by=['country','date', 'invoice_id', 'customer_id', 'stream_id', 'times_viewed'],
-                   ascending=[True, False, True, True, True, False],
-                   inplace=True)
+    ## Sort the DataFrame by date to fit the logique of the next function (i.e time_series_df)
+    df.sort_values(by=['country', 'date'],inplace=True)
+
     ## Reset the index
     df.reset_index(drop=True,inplace=True)
     
     return df
     
     
-# Create a time series DataFrame filtered by a specific country or not.
-def time_series_df(df, country=None):
+## Create a time series DataFrame filtered by a specific country or not.
+def time_series_df(df_, country=None):
     """
     Create a time series DataFrame filtered by a specific country or not.
 
     Parameters:
-    - df: the input DataFrame containing the necessary columns.
+    - df_: the input DataFrame containing the necessary columns.
     - country: the country to filter on. Must be in the list of unique countries in the DataFrame.
     
     Returns:
     - A time series DataFrame grouped by date.
     """
     
-    # Get unique countries from the DataFrame
-    unique_countries = df['country'].unique()
+    if country:
+        if country not in df_['country'].unique().tolist():
+            raise Exception("Country not found")
+        df = df_[df_['country'] == country]
+    else:
+        df = df_
+
+    ## Ensure dates are in datetime format
+    df['date'] = pd.to_datetime(df['date'])
     
-    # Filter the DataFrame by the selected country
-    df = df[df['country'] == country]
-    
-    # Use a date range to ensure all days will be accounted for in the time_series_df (1)
-    df['date'] = pd.to_datetime(df['date'])  # Ensure 'date' is in datetime format
+    ## Sort the DataFrame by date to fit the logic below
+    df.sort_values(by='date',inplace=True)
+
+    # Create a date range from the minimum date to the maximum date
     start_date = df['date'].min()
     end_date = df['date'].max()
     days = pd.date_range(start=start_date, end=end_date, freq='D')
 
-    # Aggregate the dataframe by 'date' excluding the unique_customers since customer_id column contains missing values 
+    # Aggregate the dataframe by 'date'
     time_series_df = (df.groupby('date')
-                        .agg(purchases       = ('date', 'size'),             # Transaction count
-                             unique_invoices = ('invoice_id', 'nunique'),    # Unique invoice count
-                             unique_streams  = ('stream_id', 'nunique'),     # Unique stream count
-                             total_views     = ('times_viewed', 'sum'),      # Sum of views
-                             revenue         = ('price', 'sum')              # Sum of revenue
-                            )
-                         .reindex(days, fill_value=0)     # Resets the index of the df, filling missing values with 0 (reffer to 1)           
-                         .reset_index()                   # Resets the index of the df, making the 'date' column a regular column.
-                     )   
-    # Rename the date column to match the output requirement
+                      .agg(purchases=('date', 'size'),             # Transaction count
+                           unique_invoices=('invoice_id', 'nunique'),    # Unique invoice count
+                           unique_streams=('stream_id', 'nunique'),     # Unique stream count
+                           total_views=('times_viewed', 'sum'),      # Sum of views
+                           revenue=('price', 'sum')              # Sum of revenue
+                          )
+                      .reindex(days, fill_value=0)  # Reindexing to include all days
+                      .reset_index()  # Reset index
+                     )
+
+    # Rename the date column
     time_series_df.rename(columns={'index': 'date'}, inplace=True)
-    
-    # Add year_month column
+
+    # Add a 'year-month' column
     time_series_df['year-month'] = time_series_df['date'].dt.to_period('M').astype(str)
 
     return time_series_df
+
 
 
 if __name__ == "__main__":
