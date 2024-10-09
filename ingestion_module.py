@@ -115,14 +115,14 @@ def time_series_df(df_, country=None):
 
     # Aggregate the dataframe by 'date'
     time_series_df = (df.groupby('date')
-                      .agg(purchases=('date', 'size'),             # Transaction count
+                      .agg(purchases=('date', 'size'),                   # Transaction count
                            unique_invoices=('invoice_id', 'nunique'),    # Unique invoice count
-                           unique_streams=('stream_id', 'nunique'),     # Unique stream count
-                           total_views=('times_viewed', 'sum'),      # Sum of views
-                           revenue=('price', 'sum')              # Sum of revenue
+                           unique_streams=('stream_id', 'nunique'),      # Unique stream count
+                           total_views=('times_viewed', 'sum'),          # Sum of views
+                           revenue=('price', 'sum')                      # Sum of revenue
                           )
-                      .reindex(days, fill_value=0)  # Reindexing to include all days
-                      .reset_index()  # Reset index
+                      .reindex(days, fill_value=0)                       # Reindexing to include all days
+                      .reset_index()                                     # Reset index
                      )
 
     # Rename the date column
